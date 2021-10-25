@@ -7,10 +7,12 @@ public class LogTest : MonoBehaviour
 {
     [HideInInspector]
     public ILogger logger;
+    public ILogger logger2;
 
     void Start()
     {
         this.logger = FileAppender.Create("logfile.txt", true);
+        this.logger2 = FileAppender.Create("logfile2.txt", true);
     }
 
     void OnDestroy()
@@ -21,18 +23,5 @@ public class LogTest : MonoBehaviour
 
     void Update()
     {
-        // Infoでログを出力
-        // this.logger.Log("output info!");
-
-        // try
-        // {
-        //     throw new Exception("Exception Fire!!");
-        // }
-        // catch (Exception ex)
-        // {
-        //     // Exception でのログ出力
-        //     this.logger.LogException(ex);
-        // }
-            // this.logger.LogFormat(LogType.Log,"hello world");
     }
 }

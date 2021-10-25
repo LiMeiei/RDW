@@ -27,5 +27,6 @@ public class TrackingTracker : MonoBehaviour
         TrackerPosition_Waist = TrackerPose.GetLocalPosition(SteamVR_Input_Sources.Waist);
         // Debug.Log("LeftFoot Position: " + TrackerPosition_LeftFoot.x +  ", " + TrackerPosition_LeftFoot.y + ", " + TrackerPosition_LeftFoot.z);
         // Debug.Log("RightFoot Position: " + TrackerPosition_RightFoot.x + ", " + TrackerPosition_RightFoot.y + ", " + TrackerPosition_RightFoot.z);
+        Debug.Log("Waist Position: " + TrackerPosition_Waist.x + ", " + TrackerPosition_Waist.y + ", " + TrackerPosition_Waist.z);
     }
 }

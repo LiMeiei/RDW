@@ -75,6 +75,8 @@ public class TrackerCalibration : MonoBehaviour
                             Eye.transform.position.y + RandG.Gain[RandG.trialcnt - 1].Item2 + EyeToHeadDistance,
                             Eye.transform.position.z - 1.0f);
 
+            
+
             // footCenterLine.gameObject.SetActive(true);
             // footCenterLine.gameObject.transform.position =
             //     new Vector3(footCenterLine.gameObject.transform.position.x,
@@ -82,6 +84,7 @@ public class TrackerCalibration : MonoBehaviour
             //                 Eye.transform.position.z - 0.5f);
 
             JudgeJumping.gameObject.SetActive(true);
+            JudgeJumping.StartPosZ = Eye.transform.position.z;
             this.gameObject.SetActive(false);
         }
     }

@@ -20,6 +20,13 @@ public class JudgeJumping : MonoBehaviour
     GameObject eye;
 
     [SerializeField]
+    GameObject Scaffold;
+
+    [SerializeField]
+    GameObject TargetScaffold;
+
+
+    [SerializeField]
     AFCLeftChoice AFCLeft;
 
     [SerializeField]
@@ -33,8 +40,13 @@ public class JudgeJumping : MonoBehaviour
     RandomizeGain RandG;
     DisplayJumpingStatus displayJumpingStatus;
 
+    BoxDisplay boxDisplay;
+
+
     [HideInInspector]
     public bool IsJumping;
+
+    
     
 
 
@@ -42,35 +54,42 @@ public class JudgeJumping : MonoBehaviour
     float gain;
     float height;
     float LastPosZ;
+    
+    [HideInInspector]
+    public float StartPosZ;
     float ApplyGain = 0; // 一回の跳躍で適用したゲインの合計
     bool IsLFup = false, IsRFup = false, IsWaistup = false;
     Color boxcolor; // 現在のユーザの状態を取得
+
+    [HideInInspector]
     public int jumpcnt = 0; // 何回ジャンプしたのか
     float eyeMoveDis = 0; // １フレームの間に動いた距離
-    float eyeMoveSum = 0; // 初期位置から動いた距離の合計
 
 
 
 
 
 
-    // Start is called before the first frame update
     public void Start()
     {
         RandG = FindObjectOfType<RandomizeGain>();
         LogTest = FindObjectOfType<LogTest>();
         displayJumpingStatus = FindObjectOfType<DisplayJumpingStatus>();
+        
 
         gain = RandG.Gain[RandG.trialcnt - 1].Item1;
         height = RandG.Gain[RandG.trialcnt - 1].Item2;
         IsJumping = false;
         this.LogTest.logger.LogFormat(LogType.Log, "TrialNum: " + RandG.trialcnt + "回目　,Gain: " + gain + " ,Height: " + height);
         LastPosZ = eye.transform.position.z;
+        // StartPosZ = LastPosZ;
+        Debug.Log("StartPosZ: "+ StartPosZ);
 
         this.gameObject.SetActive(false);
     }
 
-    // Update is called once per frame
+
+
     public void Update()
     {
         float LFMove = TrTck.TrackerPosition_LeftFoot.y - StandStatus.LFIniPos;
@@ -97,33 +116,29 @@ public class JudgeJumping : MonoBehaviour
         }
         if(WaistMove >= 0.1f){
             if(!IsWaistup){
-                // Debug.Log("Waist Up");
             }
             IsWaistup = true;
         }else{
             if(IsWaistup){
-                // Debug.Log("Waist Down");
             }
             IsWaistup = false;
         }
 
-        if(IsLFup && IsRFup){
+        if(IsLFup && IsRFup && IsWaistup){
             if(!IsJumping){
-                this.LogTest.logger.LogFormat(LogType.Log, "Jumping");
+                Debug.Log("Jumping");
             }
             IsJumping = true;
         }
         else{
             if(IsJumping){
-                this.LogTest.logger.LogFormat(LogType.Log, "Descending");
+                Debug.Log("Descending");
             }
             IsJumping = false;
         }
 
         eyeMoveDis = Math.Abs(eye.transform.position.z - LastPosZ);
         float speed = eyeMoveDis / Time.deltaTime;
-        // Debug.Log("MoveSpeed is " + speed);
-        eyeMoveSum += eyeMoveDis;
 
 
 
@@ -156,16 +171,23 @@ public class JudgeJumping : MonoBehaviour
         {
             displayJumpingStatus.gameObject.GetComponent<Renderer>().material.color = Color.red;
             Debug.Log("box is red");
+            Debug.Log("movedistance: " + Mathf.Abs(eye.transform.position.z - StartPosZ));
         }
 
         /* 次のジャンプまでの待機解除条件 */
-        if (boxcolor == Color.red && eyeMoveSum >= 1f)
+        if (boxcolor == Color.red && Mathf.Abs(eye.transform.position.z - StartPosZ) >= 1f)
         {
             jumpcnt++;
             ApplyGain = 0;
-            eyeMoveSum = 0;
+            StartPosZ = eye.transform.position.z;
+            Debug.Log("StartPosZ: " +  StartPosZ);
             displayJumpingStatus.gameObject.GetComponent<Renderer>().material.color = Color.yellow;
-            Debug.Log("jumpcnt: " + jumpcnt);
+            this.LogTest.logger.LogFormat(LogType.Log, "jumpcnt: " + jumpcnt);
+            this.LogTest.logger2.LogFormat(LogType.Log, "jumpcnt: " + jumpcnt);
+
+            boxDisplay = FindObjectOfType<BoxDisplay>();
+            boxDisplay.gameObject.GetComponent<Renderer>().material.color = new Color(55, 120, 248, 255);
+
 
             /*合計三回ジャンプしたら試行終了*/
             if (jumpcnt == 3)
@@ -176,16 +198,17 @@ public class JudgeJumping : MonoBehaviour
                 this.LogTest.logger.LogFormat(LogType.Log, "TrialNum: " + RandG.trialcnt + "回目の操作が終了");
                 this.gameObject.SetActive(false);
             }
-
+            
+            Scaffold.gameObject.transform.position += new Vector3(0, 0, -1.0f);
+            TargetScaffold.gameObject.transform.position += new Vector3(0, 0, -1.0f);
+            boxDisplay.gameObject.transform.position += new Vector3(0, 0, -1.0f);
         }
 
 
 
         World.transform.RotateAround(eye.transform.position, Vector3.up, FrameGain);
-        Debug.Log("FrameGain, :" + FrameGain);
-        Debug.Log("ApplyGain, :" + ApplyGain);
-    
-
+        // Debug.Log("FrameGain, :" + FrameGain);
+        // Debug.Log("ApplyGain, :" + ApplyGain);
 
 
 

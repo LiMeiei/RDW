@@ -10,9 +10,9 @@ public class RandomizeGain : MonoBehaviour
 
     // Tuple<int, float[,]>[] Gain;
 
-    float[] first = {/*0.000001f, -1, 1, -3, 3, -5, 5,*/ 7, -7, 9, -9};
+    float[] first = {/*0.000001f, -1, 1, -3, 3, -5, 5, 7, -7, 9, */-9};
 
-    float[] second = {0.1f, 0.1f, 0.2f};
+    float[] second = {0.1f, 0.15f, 0.2f};
     
     [HideInInspector]
     public int trialcnt;
